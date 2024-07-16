@@ -5,9 +5,11 @@ import dev.theduardomaciel.LocationData;
 import dev.theduardomaciel.Person;
 import dev.theduardomaciel.controller.PersonController;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,5 +47,40 @@ public class PersonRegisterTest {
 		assertEquals(fadeLocationData.getNeighborhood(), personLocationData.getNeighborhood());
 		assertEquals(fadeLocationData.getCity(), personLocationData.getCity());
 		assertEquals(fadeLocationData.getState(), personLocationData.getState());
+	}
+	
+	@Test
+	void returningNullFromMock() {
+		// Iremos manipular o retorno do mock, para que ele retorne null ao invés de um objeto
+		Mockito.when(correiosApi.getLocationDataFromCep(Mockito.anyString())).thenReturn(null);
+		
+		Person person = new Person("Eduardo", LocalDate.of(2005, 9, 3));
+		personController.register(person, "12345678");
+		
+		LocationData personLocationData = person.getAddress();
+		assertNull(personLocationData);
+	}
+	
+	@Test
+	void throwExceptionWhenCallApi() {
+		LocationData fadeLocationData = new LocationData(
+				"SP",
+				"São Paulo",
+				"Rua Teste",
+				"Complemento Teste",
+				"Bairro Teste"
+		);
+		
+		// Iremos manipular o retorno do mock, para que ele lance uma exceção ao invés de retornar um objeto
+		// Mockito.when(correiosApi.getLocationDataFromCep(Mockito.anyString())).thenThrow(IllegalArgumentException.class);
+		// ou: no lugar de "IllegalArgumentException.class" é possível utilizar: new RuntimeException("Erro ao chamar API")
+		
+		Mockito.doThrow(IllegalArgumentException.class).when(correiosApi).getLocationDataFromCep(Mockito.anyString());
+		
+		Person person = new Person("Eduardo", LocalDate.of(2005, 9, 3));
+		
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			personController.register(person, "12345678");
+		});
 	}
 }

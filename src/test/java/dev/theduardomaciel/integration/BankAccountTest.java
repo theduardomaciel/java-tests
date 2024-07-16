@@ -5,10 +5,7 @@ import dev.theduardomaciel.BankAccount;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.mockito.ArgumentMatchers;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,5 +30,13 @@ public class BankAccountTest {
 		bankAccount.payBill(200);
 		
 		Mockito.verify(this.bankAccount, Mockito.times(3)).isBalancePositive();
+	}
+	
+	@Test
+	void ignoreExceptionsOfBalanceVerification() {
+		// Ignorar exceções lançadas pelo método "isBalancePositive"
+		Mockito.doNothing().when(this.bankAccount).payBill(ArgumentMatchers.anyInt());
+		
+		bankAccount.payBill(1_100);
 	}
 }
