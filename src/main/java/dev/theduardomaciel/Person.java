@@ -8,6 +8,7 @@ import java.util.Objects;
 public class Person {
 	private final String name;
 	private LocalDate birthDate;
+	private LocationData address;
 	
 	public Person(String name) {
 		this.name = name;
@@ -41,6 +42,14 @@ public class Person {
 	
 	public boolean isAdult() {
 		return getAge() >= 18;
+	}
+	
+	public LocationData getAddress() {
+		return address;
+	}
+	
+	public void setAddress(LocationData address) {
+		this.address = address;
 	}
 	
 	@Override
